@@ -7,7 +7,7 @@
 Auditbeat собирает события с хоста и отправляет их в Kafka. Kafka нужна как буфер: если событий много и разом, Elasticsearch не должен их терять. Дальше Python-скрипт вычитывает сообщения из Kafka и пишет их в Elasticsearch, а Kibana показывает всё в виде поиска и дашбордов.
 Auditbeat -> Kafka (топик auditbeat) -> Python-коннектор (sync.py) -> Elasticsearch -> Kibana
 
-![Общий вид в Kibana Discover](screenshots/kibana-overview.png)
+![Общий вид в Kibana Discover](kibana-overview.png)
 
 ## Файлы в проекте
 
@@ -59,4 +59,4 @@ process.title : "sudo -S -k id" and event.outcome : "failure"
 - `auditd.result`: `fail`
 - `event.action`: `connected-to` — обращение к сокету авторизации `/var/run/nscd/socket`
 
-![Найденный инцидент в Kibana](screenshots/kibana-brute-force.png)
+![Найденный инцидент в Kibana](kibana-brute-force.png)
