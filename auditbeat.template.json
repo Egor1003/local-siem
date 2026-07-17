@@ -1,0 +1,44 @@
+{
+  "index_patterns": ["auditbeat-logs*"],
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "host": {
+        "properties": {
+          "name": { "type": "keyword" }
+        }
+      },
+      "process": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "title": { "type": "keyword" }
+        }
+      },
+      "user": {
+        "properties": {
+          "name": { "type": "keyword" },
+          "name_map": {
+            "properties": {
+              "auid": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      "auditd": {
+        "properties": {
+          "result": { "type": "keyword" }
+        }
+      },
+      "event": {
+        "properties": {
+          "action": { "type": "keyword" },
+          "outcome": { "type": "keyword" }
+        }
+      }
+    }
+  }
+}

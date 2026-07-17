@@ -1,0 +1,77 @@
+version: '3.7'
+services:
+  lastic-node1:
+    image: amazon/opendistro-for-elasticsearch:0.8.0
+    environment:
+      - cluster.name=lastic-cluster
+      - opendistro_security.ssl.http.enabled=false
+      - bootstrap.memory_lock=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - lastic-data1:/usr/share/elasticsearch/data
+    ports:
+     - 9200:9200
+     - 9600:9600
+    networks:
+      - lastic-net
+  lastic-node2:
+    image: amazon/opendistro-for-elasticsearch:0.8.0
+    environment:
+      - cluster.name=odfe-cluster
+      - bootstrap.memory_lock=false
+      - opendistro_security.ssl.http.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.zen.ping.unicast.hosts=lastic-node1
+    deploy:
+      mode: replicated
+      replicas: 0
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - lastic-data2:/usr/share/elasticsearch/data
+    networks:
+      - lastic-net
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:0.8.0
+    ports:
+      - 5600:5601
+    environment:
+      ELASTICSEARCH_URL: http://lastic-node1:9200
+    networks:
+      - lastic-net
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+    networks:
+      - lastic-net
+  kafka:
+    image: wurstmeister/kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
+    networks:
+      - lastic-net
+
+volumes:
+  lastic-data1:
+  lastic-data2:
+
+networks:
+  lastic-net:
+
+
